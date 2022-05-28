@@ -1,0 +1,4 @@
+plugins:
+  - extension: .go
+    install: go install github.com/terakoya76/commentcov-plugin-go@latest
+    command: commentcov-plugin-go2
