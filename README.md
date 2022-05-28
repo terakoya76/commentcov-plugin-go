@@ -1,0 +1,1 @@
+# commentcov-plugin-go
