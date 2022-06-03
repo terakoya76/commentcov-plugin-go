@@ -1,7 +1,8 @@
 plugins:
   - extension: .go
-    install: go install github.com/commentcov/commentcov-plugin-go@latest
-    command: commentcov-plugin-go
-
-exclude_pathes:
-  - vendor/**/**
+    install_command: go install github.com/commentcov/commentcov-plugin-go@latest
+    execute_command: commentcov-plugin-go
+target_path: .
+exclude_paths:
+  - ./vendor/**/**
+mode: file_scope
