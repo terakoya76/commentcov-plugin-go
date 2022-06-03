@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        go: [1.16, 1.17, 1.18]
+        go: [1.18]
         os: [ubuntu-20.04, ubuntu-22.04]
 
     name: all
@@ -32,7 +32,7 @@ jobs:
 
     - name: download dependencies
       if: steps.cache-go-sum.outputs.cache-hit != 'true'
-      run: go mod download
+      run: go mod tidy
 
     - name: lint
       run: make lint
