@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	// blockCmp is go-cmp/cmp custom competitor for *proto.Block.
 	blockCmp = cmp.Comparer(func(x, y *proto.Block) bool {
 		return cmp.Equal(
 			&x,
@@ -21,6 +22,7 @@ var (
 		)
 	})
 
+	// commentCmp is go-cmp/cmp custom competitor for *proto.Comment.
 	commentCmp = cmp.Comparer(func(x, y *proto.Comment) bool {
 		return cmp.Equal(
 			&x,
@@ -30,6 +32,7 @@ var (
 		)
 	})
 
+	// coverageItemCmp is go-cmp/cmp custom competitor for *proto.CoverageItem.
 	coverageItemCmp = cmp.Comparer(func(x, y *proto.CoverageItem) bool {
 		return cmp.Equal(
 			&x,
@@ -42,6 +45,7 @@ var (
 )
 
 //nolint:funlen
+// TestProcessFileCoverage is the unittest for ProcessFileCoverage.
 func TestProcessFileCoverage(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -176,7 +180,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   6,
 						StartColumn: 5,
 						EndLine:     6,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -211,7 +215,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   11,
 						StartColumn: 5,
 						EndLine:     11,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -246,7 +250,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   16,
 						StartColumn: 7,
 						EndLine:     16,
-						EndColumn:   32,
+						EndColumn:   14,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -281,7 +285,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   21,
 						StartColumn: 5,
 						EndLine:     21,
-						EndColumn:   30,
+						EndColumn:   12,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -810,7 +814,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   6,
 						StartColumn: 25,
 						EndLine:     6,
-						EndColumn:   48,
+						EndColumn:   30,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -845,7 +849,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   11,
 						StartColumn: 25,
 						EndLine:     11,
-						EndColumn:   48,
+						EndColumn:   30,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -880,7 +884,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   17,
 						StartColumn: 29,
 						EndLine:     17,
-						EndColumn:   54,
+						EndColumn:   36,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -915,7 +919,7 @@ func MyFunc() bool { // MyFunc Inline
 						StartLine:   22,
 						StartColumn: 27,
 						EndLine:     22,
-						EndColumn:   52,
+						EndColumn:   34,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -1335,6 +1339,7 @@ func MyFunc() bool { // MyFunc Inline
 }
 
 //nolint:funlen
+// TestProcessPackageCoverage is the unittest for ProcessPackageCoverage.
 func TestProcessPackageCoverage(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -1545,6 +1550,7 @@ package hoge
 }
 
 //nolint:funlen
+// TestProcessFunctionCoverage is the unittest for ProcessFunctionCoverage.
 func TestProcessFunctionCoverage(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -1901,6 +1907,7 @@ func MyFunc() bool {
 }
 
 //nolint:funlen
+// TestProcessVariableCoverage_Var is the unittest for ProcessVariableCoverage: var.
 func TestProcessVariableCoverage_Var(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -1927,7 +1934,59 @@ var MyVar string = "string" // MyVar Inline
 						StartLine:   5,
 						StartColumn: 5,
 						EndLine:     5,
-						EndColumn:   28,
+						EndColumn:   10,
+					},
+					File:       "hoge.go",
+					Identifier: "MyVar",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   4,
+								StartColumn: 1,
+								EndLine:     4,
+								EndColumn:   16,
+							},
+							Comment: "MyVar Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 29,
+								EndLine:     5,
+								EndColumn:   44,
+							},
+							Comment: "MyVar Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			name:     "var from func with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of MyVar
+
+// MyVar Header
+var MyVar = func() string { // MyVar Inline
+    return "string" // MyVar Inline return
+}() // MyVar Inline
+// Out of MyVar
+
+// Out of MyVar
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 5,
+						EndLine:     5,
+						EndColumn:   10,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -1976,7 +2035,7 @@ var myVar string = "string" // myVar Inline
 						StartLine:   5,
 						StartColumn: 5,
 						EndLine:     5,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:       "hoge.go",
 					Identifier: "myVar",
@@ -2025,7 +2084,7 @@ var myVar string = "string" // myVar Inline
 						StartLine:   5,
 						StartColumn: 25,
 						EndLine:     5,
-						EndColumn:   48,
+						EndColumn:   30,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -2074,7 +2133,7 @@ var MyVar string = "string"
 						StartLine:   5,
 						StartColumn: 5,
 						EndLine:     5,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -2112,7 +2171,7 @@ var MyVar string = "string" // MyVar Inline
 						StartLine:   4,
 						StartColumn: 5,
 						EndLine:     4,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyVar",
@@ -2150,7 +2209,7 @@ var MyVar string = "string"
 						StartLine:   4,
 						StartColumn: 5,
 						EndLine:     4,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyVar",
@@ -2183,7 +2242,62 @@ var ( // Out of MyVar
 						StartLine:   7,
 						StartColumn: 5,
 						EndLine:     7,
-						EndColumn:   28,
+						EndColumn:   10,
+					},
+					File:       "hoge.go",
+					Identifier: "MyVar",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   6,
+								StartColumn: 5,
+								EndLine:     6,
+								EndColumn:   20,
+							},
+							Comment: "MyVar Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   7,
+								StartColumn: 29,
+								EndLine:     7,
+								EndColumn:   44,
+							},
+							Comment: "MyVar Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			name:     "var () from func with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of MyVar
+
+// Out of MyVar
+var ( // Out of MyVar
+    // MyVar Header
+    MyVar = func() string { // MyVar Inline
+        return "string" // MyVar Inline return
+	}() // MyVar Inline
+    // Out of MyVar
+) // Out of MyVar
+
+// Out of MyVar
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   7,
+						StartColumn: 5,
+						EndLine:     7,
+						EndColumn:   10,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -2236,7 +2350,7 @@ var ( // Out of MyVar
 						StartLine:   7,
 						StartColumn: 25,
 						EndLine:     7,
-						EndColumn:   48,
+						EndColumn:   30,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -2288,7 +2402,7 @@ var ( // Out of MyVar
 						StartLine:   7,
 						StartColumn: 5,
 						EndLine:     7,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:       "hoge.go",
 					Identifier: "MyVar",
@@ -2330,7 +2444,7 @@ var ( // Out of MyVar
 						StartLine:   6,
 						StartColumn: 5,
 						EndLine:     6,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyVar",
@@ -2370,7 +2484,7 @@ var (
 						StartLine:   5,
 						StartColumn: 5,
 						EndLine:     5,
-						EndColumn:   28,
+						EndColumn:   10,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyVar",
@@ -2405,6 +2519,7 @@ var (
 }
 
 //nolint:funlen
+// TestProcessVariableCoverage_Const is the unittest for ProcessVariableCoverage: const.
 func TestProcessVariableCoverage_Const(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -2431,7 +2546,7 @@ const MyConst string = "string" // MyConst Inline
 						StartLine:   5,
 						StartColumn: 7,
 						EndLine:     5,
-						EndColumn:   32,
+						EndColumn:   14,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -2480,7 +2595,7 @@ const myConst string = "string" // myConst Inline
 						StartLine:   5,
 						StartColumn: 7,
 						EndLine:     5,
-						EndColumn:   32,
+						EndColumn:   14,
 					},
 					File:       "hoge.go",
 					Identifier: "myConst",
@@ -2529,7 +2644,7 @@ const myConst string = "string" // myConst Inline
 						StartLine:   5,
 						StartColumn: 29,
 						EndLine:     5,
-						EndColumn:   54,
+						EndColumn:   36,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -2578,7 +2693,7 @@ const MyConst string = "string"
 						StartLine:   5,
 						StartColumn: 7,
 						EndLine:     5,
-						EndColumn:   32,
+						EndColumn:   14,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -2616,7 +2731,7 @@ const MyConst string = "string" // MyConst Inline
 						StartLine:   4,
 						StartColumn: 7,
 						EndLine:     4,
-						EndColumn:   32,
+						EndColumn:   14,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyConst",
@@ -2654,7 +2769,7 @@ const MyConst string = "string"
 						StartLine:   4,
 						StartColumn: 7,
 						EndLine:     4,
-						EndColumn:   32,
+						EndColumn:   14,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyConst",
@@ -2687,7 +2802,7 @@ const ( // Out of MyConst
 						StartLine:   7,
 						StartColumn: 5,
 						EndLine:     7,
-						EndColumn:   30,
+						EndColumn:   12,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -2740,7 +2855,7 @@ const ( // Out of MyConst
 						StartLine:   7,
 						StartColumn: 27,
 						EndLine:     7,
-						EndColumn:   52,
+						EndColumn:   34,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -2793,7 +2908,7 @@ const ( // Out of MyConst
 						StartLine:   7,
 						StartColumn: 5,
 						EndLine:     7,
-						EndColumn:   30,
+						EndColumn:   12,
 					},
 					File:       "hoge.go",
 					Identifier: "MyConst",
@@ -2834,7 +2949,7 @@ const ( // Out of MyConst
 						StartLine:   5,
 						StartColumn: 5,
 						EndLine:     5,
-						EndColumn:   30,
+						EndColumn:   12,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyConst",
@@ -2874,7 +2989,7 @@ const (
 						StartLine:   5,
 						StartColumn: 5,
 						EndLine:     5,
-						EndColumn:   30,
+						EndColumn:   12,
 					},
 					File:           "hoge.go",
 					Identifier:     "MyConst",
@@ -2909,6 +3024,7 @@ const (
 }
 
 //nolint:funlen
+// TestProcessTypeCoverage_Struct is the unittest for ProcessTypeCoverage: Struct.
 func TestProcessTypeCoverage_Struct(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -3650,6 +3766,7 @@ type (
 }
 
 //nolint:funlen
+// TestProcessTypeCoverage_Interface is the unittest for ProcessTypeCoverage: Interface.
 func TestProcessTypeCoverage_Interface(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -4389,6 +4506,7 @@ type MyInterface interface {
 }
 
 //nolint:funlen
+// TestProcessTypeCoverage_TypeAlias is the unittest for ProcessTypeCoverage: Type Alias.
 func TestProcessTypeCoverage_TypeAlias(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -4893,6 +5011,7 @@ type (
 	}
 }
 
+// TestIsHeader is the unittest for IsHeader.
 func TestIsHeader(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -4968,6 +5087,7 @@ type MyType = map[string]int
 	}
 }
 
+// TestIsInline is the unittest for IsInline.
 func TestIsInline(t *testing.T) {
 	tests := []struct {
 		name  string

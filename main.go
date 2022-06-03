@@ -31,6 +31,8 @@ func (i *dummyImpl) MeasureCoverage(files []string) ([]*proto.CoverageItem, erro
 	return items, nil
 }
 
+// main is entrypoint as plugin.
+// Serving MeasureCoverage as gRPC Server.
 func main() {
 	logger := hclog.New(&hclog.LoggerOptions{
 		Level:      hclog.Trace,

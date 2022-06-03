@@ -24,6 +24,7 @@ func FileToCoverageItems(logger hclog.Logger, file string) ([]*proto.CoverageIte
 	return items, nil
 }
 
+// ProcessFileCoverage measures the comment coverage for the entire given file.
 func ProcessFileCoverage(file string, fset *token.FileSet, f *ast.File) []*proto.CoverageItem {
 	ci := ProcessPackageCoverage(file, fset, f)
 	items := []*proto.CoverageItem{
@@ -62,6 +63,7 @@ func ProcessFileCoverage(file string, fset *token.FileSet, f *ast.File) []*proto
 	return items
 }
 
+// ProcessPackageCoverage measures the package level comment coverage.
 func ProcessPackageCoverage(file string, fset *token.FileSet, f *ast.File) *proto.CoverageItem {
 	sp := fset.Position(f.Package)
 	block := &proto.Block{
@@ -116,6 +118,7 @@ func ProcessPackageCoverage(file string, fset *token.FileSet, f *ast.File) *prot
 	}
 }
 
+// ProcessFunctionCoverage measures the comment coverage of functions.
 func ProcessFunctionCoverage(file string, fset *token.FileSet, f *ast.File, fdecl *ast.FuncDecl) *proto.CoverageItem {
 	sp := fset.Position(fdecl.Pos())
 	ep := fset.Position(fdecl.End())
@@ -178,22 +181,23 @@ func ProcessFunctionCoverage(file string, fset *token.FileSet, f *ast.File, fdec
 	}
 }
 
+// ProcessVariableCoverage measures the comment coverage of variables.
 func ProcessVariableCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *ast.GenDecl) []*proto.CoverageItem {
 	items := make([]*proto.CoverageItem, 0)
 
 	for _, s := range gdecl.Specs {
 		vs := s.(*ast.ValueSpec)
-		sp := fset.Position(vs.Pos())
-		ep := fset.Position(vs.End())
-		block := &proto.Block{
-			StartLine:   uint32(sp.Line),
-			StartColumn: uint32(sp.Column),
-			EndLine:     uint32(ep.Line),
-			EndColumn:   uint32(ep.Column),
-		}
 
 		for _, name := range vs.Names {
 			identifier := name.Name
+			sp := fset.Position(name.Pos())
+			ep := fset.Position(name.End())
+			block := &proto.Block{
+				StartLine:   uint32(sp.Line),
+				StartColumn: uint32(sp.Column),
+				EndLine:     uint32(ep.Line),
+				EndColumn:   uint32(ep.Column),
+			}
 
 			var scope proto.CoverageItem_Scope
 			if ast.IsExported(identifier) {
@@ -250,6 +254,7 @@ func ProcessVariableCoverage(file string, fset *token.FileSet, f *ast.File, gdec
 	return items
 }
 
+// ProcessTypeCoverage measures the comment coverage of type declarations.
 func ProcessTypeCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *ast.GenDecl) []*proto.CoverageItem {
 	items := make([]*proto.CoverageItem, 0)
 
@@ -329,6 +334,7 @@ func ProcessTypeCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *a
 	return items
 }
 
+// IsHeader returns true if the given *ast.CommentGroup is belonged to the given *proto.Block as HeaderComments.
 func IsHeader(fset *token.FileSet, cg *ast.CommentGroup, b *proto.Block) bool {
 	csp := fset.Position(cg.Pos())
 	cep := fset.Position(cg.End())
@@ -337,6 +343,7 @@ func IsHeader(fset *token.FileSet, cg *ast.CommentGroup, b *proto.Block) bool {
 		(cep.Line == int(b.StartLine) && cep.Column < int(b.StartColumn))
 }
 
+// IsInline returns true if the given *ast.CommentGroup is belonged to the given *proto.Block as InlineComments.
 func IsInline(fset *token.FileSet, cg *ast.CommentGroup, b *proto.Block) bool {
 	csp := fset.Position(cg.Pos())
 	cep := fset.Position(cg.End())
