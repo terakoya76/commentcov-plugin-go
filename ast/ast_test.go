@@ -6,10 +6,11 @@ import (
 	"go/token"
 	"testing"
 
+	"github.com/commentcov/commentcov/proto"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	myAst "github.com/terakoya76/commentcov-plugin-go/ast"
-	"github.com/terakoya76/commentcov/proto"
+
+	myAst "github.com/commentcov/commentcov-plugin-go/ast"
 )
 
 var (

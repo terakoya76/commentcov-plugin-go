@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/commentcov/commentcov/proto"
 	"github.com/hashicorp/go-hclog"
-	"github.com/terakoya76/commentcov/proto"
 )
 
 // FileToCoverageItems is the logic of the plugin.

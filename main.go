@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/commentcov/commentcov/pkg/pluggable"
+	"github.com/commentcov/commentcov/proto"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"github.com/terakoya76/commentcov/pkg/pluggable"
-	"github.com/terakoya76/commentcov/proto"
 
-	"github.com/terakoya76/commentcov-plugin-go/ast"
+	"github.com/commentcov/commentcov-plugin-go/ast"
 )
 
 // dummyImpl implements pluggable.Pluggable.
