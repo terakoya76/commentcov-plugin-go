@@ -1,6 +1,7 @@
 package ast_test
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -3622,6 +3623,130 @@ const ( // Out of MyConst
 		},
 
 		{
+			name:     "const () enum with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of Color
+
+const ( // Out of Color
+    // Red Header
+    Red Color = iota // Red Inline
+    // Blue Header
+    Blue // Blue Inline
+    // Yellow Header
+    Yellow // Yellow Inline
+    // Out of Color
+) // Out of Color
+
+// Out of Color
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   6,
+						StartColumn: 5,
+						EndLine:     6,
+						EndColumn:   8,
+					},
+					File:       "hoge.go",
+					Identifier: "Red",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 5,
+								EndLine:     5,
+								EndColumn:   18,
+							},
+							Comment: "Red Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   6,
+								StartColumn: 22,
+								EndLine:     6,
+								EndColumn:   35,
+							},
+							Comment: "Red Inline\n",
+						},
+					},
+				},
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   8,
+						StartColumn: 5,
+						EndLine:     8,
+						EndColumn:   9,
+					},
+					File:       "hoge.go",
+					Identifier: "Blue",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   7,
+								StartColumn: 5,
+								EndLine:     7,
+								EndColumn:   19,
+							},
+							Comment: "Blue Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   8,
+								StartColumn: 10,
+								EndLine:     8,
+								EndColumn:   24,
+							},
+							Comment: "Blue Inline\n",
+						},
+					},
+				},
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   10,
+						StartColumn: 5,
+						EndLine:     10,
+						EndColumn:   11,
+					},
+					File:       "hoge.go",
+					Identifier: "Yellow",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   9,
+								StartColumn: 5,
+								EndLine:     9,
+								EndColumn:   21,
+							},
+							Comment: "Yellow Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   10,
+								StartColumn: 12,
+								EndLine:     10,
+								EndColumn:   28,
+							},
+							Comment: "Yellow Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
 			name:     "const () without comment",
 			filename: "hoge.go",
 			src: `package hoge
@@ -3660,6 +3785,7 @@ const (
 		}
 
 		for _, decl := range f.Decls {
+			fmt.Printf("%v\n", decl)
 			if d := decl.(*ast.GenDecl); d.Tok == token.CONST {
 				t.Run(tt.name, func(t *testing.T) {
 					got := myAst.ProcessVariableCoverage(tt.filename, fset, f, d)
