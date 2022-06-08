@@ -1,6 +1,7 @@
 package ast_test
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -1789,73 +1790,6 @@ func MyFunc() bool { // MyFunc Inline
 		},
 
 		{
-			name:     "private func with comment",
-			filename: "hoge.go",
-			src: `package hoge
-// Out of myFunc
-
-// myFunc Header
-func myFunc() bool { // myFunc Inline
-    return true // myFunc Inline return
-} // myFunc Inline
-
-// Out of myFunc
-`,
-			want: &proto.CoverageItem{
-				Scope: proto.CoverageItem_PRIVATE_FUNCTION,
-				TargetBlock: &proto.Block{
-					StartLine:   5,
-					StartColumn: 1,
-					EndLine:     7,
-					EndColumn:   2,
-				},
-				File:       "hoge.go",
-				Identifier: "myFunc",
-				Extension:  ".go",
-				HeaderComments: []*proto.Comment{
-					{
-						Block: &proto.Block{
-							StartLine:   4,
-							StartColumn: 1,
-							EndLine:     4,
-							EndColumn:   17,
-						},
-						Comment: "myFunc Header\n",
-					},
-				},
-				InlineComments: []*proto.Comment{
-					{
-						Block: &proto.Block{
-							StartLine:   5,
-							StartColumn: 22,
-							EndLine:     5,
-							EndColumn:   38,
-						},
-						Comment: "myFunc Inline\n",
-					},
-					{
-						Block: &proto.Block{
-							StartLine:   6,
-							StartColumn: 17,
-							EndLine:     6,
-							EndColumn:   40,
-						},
-						Comment: "myFunc Inline return\n",
-					},
-					{
-						Block: &proto.Block{
-							StartLine:   7,
-							StartColumn: 3,
-							EndLine:     7,
-							EndColumn:   19,
-						},
-						Comment: "myFunc Inline\n",
-					},
-				},
-			},
-		},
-
-		{
 			name:     "func with comment /* */",
 			filename: "hoge.go",
 			src: `package hoge
@@ -2087,6 +2021,73 @@ func MyFunc() bool { /* MyFunc Inline */
 		},
 
 		{
+			name:     "func private with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of myFunc
+
+// myFunc Header
+func myFunc() bool { // myFunc Inline
+    return true // myFunc Inline return
+} // myFunc Inline
+
+// Out of myFunc
+`,
+			want: &proto.CoverageItem{
+				Scope: proto.CoverageItem_PRIVATE_FUNCTION,
+				TargetBlock: &proto.Block{
+					StartLine:   5,
+					StartColumn: 1,
+					EndLine:     7,
+					EndColumn:   2,
+				},
+				File:       "hoge.go",
+				Identifier: "myFunc",
+				Extension:  ".go",
+				HeaderComments: []*proto.Comment{
+					{
+						Block: &proto.Block{
+							StartLine:   4,
+							StartColumn: 1,
+							EndLine:     4,
+							EndColumn:   17,
+						},
+						Comment: "myFunc Header\n",
+					},
+				},
+				InlineComments: []*proto.Comment{
+					{
+						Block: &proto.Block{
+							StartLine:   5,
+							StartColumn: 22,
+							EndLine:     5,
+							EndColumn:   38,
+						},
+						Comment: "myFunc Inline\n",
+					},
+					{
+						Block: &proto.Block{
+							StartLine:   6,
+							StartColumn: 17,
+							EndLine:     6,
+							EndColumn:   40,
+						},
+						Comment: "myFunc Inline return\n",
+					},
+					{
+						Block: &proto.Block{
+							StartLine:   7,
+							StartColumn: 3,
+							EndLine:     7,
+							EndColumn:   19,
+						},
+						Comment: "myFunc Inline\n",
+					},
+				},
+			},
+		},
+
+		{
 			name:     "func without comment",
 			filename: "hoge.go",
 			src: `package hoge
@@ -2299,55 +2300,6 @@ var MyVar = func() string { // MyVar Inline
 		},
 
 		{
-			name:     "private var with comment",
-			filename: "hoge.go",
-			src: `package hoge
-// Out of myVar
-
-// myVar Header
-var myVar string = "string" // myVar Inline
-
-// Out of myVar
-`,
-			want: []*proto.CoverageItem{
-				{
-					Scope: proto.CoverageItem_PRIVATE_VARIABLE,
-					TargetBlock: &proto.Block{
-						StartLine:   5,
-						StartColumn: 5,
-						EndLine:     5,
-						EndColumn:   10,
-					},
-					File:       "hoge.go",
-					Identifier: "myVar",
-					Extension:  ".go",
-					HeaderComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   4,
-								StartColumn: 1,
-								EndLine:     4,
-								EndColumn:   16,
-							},
-							Comment: "myVar Header\n",
-						},
-					},
-					InlineComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   5,
-								StartColumn: 29,
-								EndLine:     5,
-								EndColumn:   44,
-							},
-							Comment: "myVar Inline\n",
-						},
-					},
-				},
-			},
-		},
-
-		{
 			name:     "var with comment /* */",
 			filename: "hoge.go",
 			src: `package hoge
@@ -2518,6 +2470,55 @@ var MyVar string = "string" // MyVar Inline
 								EndColumn:   44,
 							},
 							Comment: "MyVar Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			name:     "var private with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of myVar
+
+// myVar Header
+var myVar string = "string" // myVar Inline
+
+// Out of myVar
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PRIVATE_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 5,
+						EndLine:     5,
+						EndColumn:   10,
+					},
+					File:       "hoge.go",
+					Identifier: "myVar",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   4,
+								StartColumn: 1,
+								EndLine:     4,
+								EndColumn:   16,
+							},
+							Comment: "myVar Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 29,
+								EndLine:     5,
+								EndColumn:   44,
+							},
+							Comment: "myVar Inline\n",
 						},
 					},
 				},
@@ -3069,55 +3070,6 @@ const MyConst string = "string" // MyConst Inline
 		},
 
 		{
-			name:     "private const with comment",
-			filename: "hoge.go",
-			src: `package hoge
-// Out of myConst
-
-// myConst Header
-const myConst string = "string" // myConst Inline
-
-// Out of myConst
-`,
-			want: []*proto.CoverageItem{
-				{
-					Scope: proto.CoverageItem_PRIVATE_VARIABLE,
-					TargetBlock: &proto.Block{
-						StartLine:   5,
-						StartColumn: 7,
-						EndLine:     5,
-						EndColumn:   14,
-					},
-					File:       "hoge.go",
-					Identifier: "myConst",
-					Extension:  ".go",
-					HeaderComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   4,
-								StartColumn: 1,
-								EndLine:     4,
-								EndColumn:   18,
-							},
-							Comment: "myConst Header\n",
-						},
-					},
-					InlineComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   5,
-								StartColumn: 33,
-								EndLine:     5,
-								EndColumn:   50,
-							},
-							Comment: "myConst Inline\n",
-						},
-					},
-				},
-			},
-		},
-
-		{
 			name:     "const with comment /* */",
 			filename: "hoge.go",
 			src: `package hoge
@@ -3288,6 +3240,55 @@ const MyConst string = "string" // MyConst Inline
 								EndColumn:   50,
 							},
 							Comment: "MyConst Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			name:     "const private with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of myConst
+
+// myConst Header
+const myConst string = "string" // myConst Inline
+
+// Out of myConst
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PRIVATE_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 7,
+						EndLine:     5,
+						EndColumn:   14,
+					},
+					File:       "hoge.go",
+					Identifier: "myConst",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   4,
+								StartColumn: 1,
+								EndLine:     4,
+								EndColumn:   18,
+							},
+							Comment: "myConst Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 33,
+								EndLine:     5,
+								EndColumn:   50,
+							},
+							Comment: "myConst Inline\n",
 						},
 					},
 				},
@@ -3622,6 +3623,130 @@ const ( // Out of MyConst
 		},
 
 		{
+			name:     "const () enum with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of Color
+
+const ( // Out of Color
+    // Red Header
+    Red Color = iota // Red Inline
+    // Blue Header
+    Blue // Blue Inline
+    // Yellow Header
+    Yellow // Yellow Inline
+    // Out of Color
+) // Out of Color
+
+// Out of Color
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   6,
+						StartColumn: 5,
+						EndLine:     6,
+						EndColumn:   8,
+					},
+					File:       "hoge.go",
+					Identifier: "Red",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 5,
+								EndLine:     5,
+								EndColumn:   18,
+							},
+							Comment: "Red Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   6,
+								StartColumn: 22,
+								EndLine:     6,
+								EndColumn:   35,
+							},
+							Comment: "Red Inline\n",
+						},
+					},
+				},
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   8,
+						StartColumn: 5,
+						EndLine:     8,
+						EndColumn:   9,
+					},
+					File:       "hoge.go",
+					Identifier: "Blue",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   7,
+								StartColumn: 5,
+								EndLine:     7,
+								EndColumn:   19,
+							},
+							Comment: "Blue Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   8,
+								StartColumn: 10,
+								EndLine:     8,
+								EndColumn:   24,
+							},
+							Comment: "Blue Inline\n",
+						},
+					},
+				},
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   10,
+						StartColumn: 5,
+						EndLine:     10,
+						EndColumn:   11,
+					},
+					File:       "hoge.go",
+					Identifier: "Yellow",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   9,
+								StartColumn: 5,
+								EndLine:     9,
+								EndColumn:   21,
+							},
+							Comment: "Yellow Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   10,
+								StartColumn: 12,
+								EndLine:     10,
+								EndColumn:   28,
+							},
+							Comment: "Yellow Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
 			name:     "const () without comment",
 			filename: "hoge.go",
 			src: `package hoge
@@ -3660,6 +3785,7 @@ const (
 		}
 
 		for _, decl := range f.Decls {
+			fmt.Printf("%v\n", decl)
 			if d := decl.(*ast.GenDecl); d.Tok == token.CONST {
 				t.Run(tt.name, func(t *testing.T) {
 					got := myAst.ProcessVariableCoverage(tt.filename, fset, f, d)
@@ -3841,87 +3967,6 @@ type MyStruct struct { // MyStruct Inline
 								EndColumn:   21,
 							},
 							Comment: "MyStruct Inline\n",
-						},
-					},
-				},
-			},
-		},
-
-		{
-			name:     "private type struct with comment",
-			filename: "hoge.go",
-			src: `package hoge
-// Out of myStruct
-
-// myStruct Header
-type myStruct struct { // myStruct Inline
-    // myStruct Inline a
-    a string
-    // myStruct Inline b
-    b string
-} // myStruct Inline
-
-// Out of myStruct
-`,
-			want: []*proto.CoverageItem{
-				{
-					Scope: proto.CoverageItem_PRIVATE_CLASS,
-					TargetBlock: &proto.Block{
-						StartLine:   5,
-						StartColumn: 6,
-						EndLine:     10,
-						EndColumn:   2,
-					},
-					File:       "hoge.go",
-					Identifier: "myStruct",
-					Extension:  ".go",
-					HeaderComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   4,
-								StartColumn: 1,
-								EndLine:     4,
-								EndColumn:   19,
-							},
-							Comment: "myStruct Header\n",
-						},
-					},
-					InlineComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   5,
-								StartColumn: 24,
-								EndLine:     5,
-								EndColumn:   42,
-							},
-							Comment: "myStruct Inline\n",
-						},
-						{
-							Block: &proto.Block{
-								StartLine:   6,
-								StartColumn: 5,
-								EndLine:     6,
-								EndColumn:   25,
-							},
-							Comment: "myStruct Inline a\n",
-						},
-						{
-							Block: &proto.Block{
-								StartLine:   8,
-								StartColumn: 5,
-								EndLine:     8,
-								EndColumn:   25,
-							},
-							Comment: "myStruct Inline b\n",
-						},
-						{
-							Block: &proto.Block{
-								StartLine:   10,
-								StartColumn: 3,
-								EndLine:     10,
-								EndColumn:   21,
-							},
-							Comment: "myStruct Inline\n",
 						},
 					},
 				},
@@ -4198,6 +4243,87 @@ type MyStruct struct { // MyStruct Inline
 								EndColumn:   21,
 							},
 							Comment: "MyStruct Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			name:     "type private struct with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of myStruct
+
+// myStruct Header
+type myStruct struct { // myStruct Inline
+    // myStruct Inline a
+    a string
+    // myStruct Inline b
+    b string
+} // myStruct Inline
+
+// Out of myStruct
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PRIVATE_CLASS,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 6,
+						EndLine:     10,
+						EndColumn:   2,
+					},
+					File:       "hoge.go",
+					Identifier: "myStruct",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   4,
+								StartColumn: 1,
+								EndLine:     4,
+								EndColumn:   19,
+							},
+							Comment: "myStruct Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 24,
+								EndLine:     5,
+								EndColumn:   42,
+							},
+							Comment: "myStruct Inline\n",
+						},
+						{
+							Block: &proto.Block{
+								StartLine:   6,
+								StartColumn: 5,
+								EndLine:     6,
+								EndColumn:   25,
+							},
+							Comment: "myStruct Inline a\n",
+						},
+						{
+							Block: &proto.Block{
+								StartLine:   8,
+								StartColumn: 5,
+								EndLine:     8,
+								EndColumn:   25,
+							},
+							Comment: "myStruct Inline b\n",
+						},
+						{
+							Block: &proto.Block{
+								StartLine:   10,
+								StartColumn: 3,
+								EndLine:     10,
+								EndColumn:   21,
+							},
+							Comment: "myStruct Inline\n",
 						},
 					},
 				},
@@ -4928,87 +5054,6 @@ type MyInterface interface { // MyInterface Inline
 		},
 
 		{
-			name:     "private type interface with comment",
-			filename: "hoge.go",
-			src: `package hoge
-// Out of myInterface
-
-// myInterface Header
-type myInterface interface { // myInterface Inline
-    // myInterface Inline a
-    a() string
-    // myInterface Inline b
-    b() string
-} // myInterface Inline
-
-// Out of myInterface
-`,
-			want: []*proto.CoverageItem{
-				{
-					Scope: proto.CoverageItem_PRIVATE_CLASS,
-					TargetBlock: &proto.Block{
-						StartLine:   5,
-						StartColumn: 6,
-						EndLine:     10,
-						EndColumn:   2,
-					},
-					File:       "hoge.go",
-					Identifier: "myInterface",
-					Extension:  ".go",
-					HeaderComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   4,
-								StartColumn: 1,
-								EndLine:     4,
-								EndColumn:   22,
-							},
-							Comment: "myInterface Header\n",
-						},
-					},
-					InlineComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   5,
-								StartColumn: 30,
-								EndLine:     5,
-								EndColumn:   51,
-							},
-							Comment: "myInterface Inline\n",
-						},
-						{
-							Block: &proto.Block{
-								StartLine:   6,
-								StartColumn: 5,
-								EndLine:     6,
-								EndColumn:   28,
-							},
-							Comment: "myInterface Inline a\n",
-						},
-						{
-							Block: &proto.Block{
-								StartLine:   8,
-								StartColumn: 5,
-								EndLine:     8,
-								EndColumn:   28,
-							},
-							Comment: "myInterface Inline b\n",
-						},
-						{
-							Block: &proto.Block{
-								StartLine:   10,
-								StartColumn: 3,
-								EndLine:     10,
-								EndColumn:   24,
-							},
-							Comment: "myInterface Inline\n",
-						},
-					},
-				},
-			},
-		},
-
-		{
 			name:     "type interface with comment /* */",
 			filename: "hoge.go",
 			src: `package hoge
@@ -5278,6 +5323,87 @@ type MyInterface interface { // MyInterface Inline
 								EndColumn:   24,
 							},
 							Comment: "MyInterface Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			name:     "type private interface with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of myInterface
+
+// myInterface Header
+type myInterface interface { // myInterface Inline
+    // myInterface Inline a
+    a() string
+    // myInterface Inline b
+    b() string
+} // myInterface Inline
+
+// Out of myInterface
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PRIVATE_CLASS,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 6,
+						EndLine:     10,
+						EndColumn:   2,
+					},
+					File:       "hoge.go",
+					Identifier: "myInterface",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   4,
+								StartColumn: 1,
+								EndLine:     4,
+								EndColumn:   22,
+							},
+							Comment: "myInterface Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 30,
+								EndLine:     5,
+								EndColumn:   51,
+							},
+							Comment: "myInterface Inline\n",
+						},
+						{
+							Block: &proto.Block{
+								StartLine:   6,
+								StartColumn: 5,
+								EndLine:     6,
+								EndColumn:   28,
+							},
+							Comment: "myInterface Inline a\n",
+						},
+						{
+							Block: &proto.Block{
+								StartLine:   8,
+								StartColumn: 5,
+								EndLine:     8,
+								EndColumn:   28,
+							},
+							Comment: "myInterface Inline b\n",
+						},
+						{
+							Block: &proto.Block{
+								StartLine:   10,
+								StartColumn: 3,
+								EndLine:     10,
+								EndColumn:   24,
+							},
+							Comment: "myInterface Inline\n",
 						},
 					},
 				},
@@ -5942,55 +6068,6 @@ type MyType = map[string]int // MyType Inline
 		},
 
 		{
-			name:     "private type alias with comment",
-			filename: "hoge.go",
-			src: `package hoge
-// Out of myType
-
-// myType Header
-type myType = map[string]int // myType Inline
-
-// Out of myType
-`,
-			want: []*proto.CoverageItem{
-				{
-					Scope: proto.CoverageItem_PRIVATE_TYPE,
-					TargetBlock: &proto.Block{
-						StartLine:   5,
-						StartColumn: 6,
-						EndLine:     5,
-						EndColumn:   29,
-					},
-					File:       "hoge.go",
-					Identifier: "myType",
-					Extension:  ".go",
-					HeaderComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   4,
-								StartColumn: 1,
-								EndLine:     4,
-								EndColumn:   17,
-							},
-							Comment: "myType Header\n",
-						},
-					},
-					InlineComments: []*proto.Comment{
-						{
-							Block: &proto.Block{
-								StartLine:   5,
-								StartColumn: 30,
-								EndLine:     5,
-								EndColumn:   46,
-							},
-							Comment: "myType Inline\n",
-						},
-					},
-				},
-			},
-		},
-
-		{
 			name:     "type alias with comment /* */",
 			filename: "hoge.go",
 			src: `package hoge
@@ -6161,6 +6238,55 @@ type MyType = map[string]int // MyType Inline
 								EndColumn:   46,
 							},
 							Comment: "MyType Inline\n",
+						},
+					},
+				},
+			},
+		},
+
+		{
+			name:     "type private alias with comment",
+			filename: "hoge.go",
+			src: `package hoge
+// Out of myType
+
+// myType Header
+type myType = map[string]int // myType Inline
+
+// Out of myType
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PRIVATE_TYPE,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 6,
+						EndLine:     5,
+						EndColumn:   29,
+					},
+					File:       "hoge.go",
+					Identifier: "myType",
+					Extension:  ".go",
+					HeaderComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   4,
+								StartColumn: 1,
+								EndLine:     4,
+								EndColumn:   17,
+							},
+							Comment: "myType Header\n",
+						},
+					},
+					InlineComments: []*proto.Comment{
+						{
+							Block: &proto.Block{
+								StartLine:   5,
+								StartColumn: 30,
+								EndLine:     5,
+								EndColumn:   46,
+							},
+							Comment: "myType Inline\n",
 						},
 					},
 				},
