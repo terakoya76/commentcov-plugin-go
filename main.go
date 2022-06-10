@@ -9,13 +9,13 @@ import (
 	"github.com/commentcov/commentcov-plugin-go/ast"
 )
 
-// dummyImpl implements pluggable.Pluggable.
-type dummyImpl struct {
+// pluginImpl implements pluggable.Pluggable.
+type pluginImpl struct {
 	logger hclog.Logger
 }
 
 // MeasureCoverage is the implementation of pluggable.Pluggable.
-func (i *dummyImpl) MeasureCoverage(files []string) ([]*proto.CoverageItem, error) {
+func (i *pluginImpl) MeasureCoverage(files []string) ([]*proto.CoverageItem, error) {
 	items := make([]*proto.CoverageItem, 0)
 
 	for _, file := range files {
@@ -45,7 +45,7 @@ func main() {
 		VersionedPlugins: map[int]plugin.PluginSet{
 			1: {
 				"commentcov": &pluggable.CommentcovPlugin{
-					Impl: &dummyImpl{
+					Impl: &pluginImpl{
 						logger: logger,
 					},
 				},
