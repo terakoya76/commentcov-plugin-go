@@ -3,9 +3,9 @@ module github.com/commentcov/commentcov-plugin-go
 go 1.18
 
 require (
-	github.com/commentcov/commentcov v0.0.3
+	github.com/commentcov/commentcov v0.0.4
 	github.com/google/go-cmp v0.5.8
-	github.com/hashicorp/go-hclog v1.2.0
+	github.com/hashicorp/go-hclog v1.2.1
 	github.com/hashicorp/go-plugin v1.4.4
 )
 
@@ -21,6 +21,6 @@ require (
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20220527130721-00d5c0f3be58 // indirect
-	google.golang.org/grpc v1.46.2 // indirect
+	google.golang.org/grpc v1.47.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 )
