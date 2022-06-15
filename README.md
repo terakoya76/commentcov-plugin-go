@@ -47,7 +47,7 @@ The mapping from the type of Go code comment to the CoverageItem Scope is below.
 
 | Scope Name                    | Golang Node                          |
 |-------------------------------|--------------------------------------|
-| CoverageItem_UNKNONW          | N/A                                  |
+| CoverageItem_UNKNOWN          | N/A                                  |
 | CoverageItem_FILE             | Package Comment                      |
 | CoverageItem_PUBLIC_MODULE    | doc.go (Not Supported yet)           |
 | CoverageItem_PRIVATE_MODULE   | N/A                                  |

@@ -3,7 +3,7 @@ module github.com/commentcov/commentcov-plugin-go
 go 1.18
 
 require (
-	github.com/commentcov/commentcov v0.0.4
+	github.com/commentcov/commentcov v0.0.7
 	github.com/google/go-cmp v0.5.8
 	github.com/hashicorp/go-hclog v1.2.1
 	github.com/hashicorp/go-plugin v1.4.4
@@ -15,6 +15,7 @@ require (
 	github.com/hashicorp/yamux v0.0.0-20211028200310-0bc27b27de87 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-zglob v0.0.3 // indirect
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	golang.org/x/net v0.0.0-20220526153639-5463443f8c37 // indirect
