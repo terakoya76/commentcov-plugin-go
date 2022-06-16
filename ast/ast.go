@@ -5,7 +5,6 @@ import (
 	"go/parser"
 	"go/token"
 	"path/filepath"
-	"strings"
 
 	"github.com/commentcov/commentcov/proto"
 	"github.com/hashicorp/go-hclog"
@@ -80,9 +79,9 @@ func ProcessPackageCoverage(file string, fset *token.FileSet, f *ast.File) *prot
 		csp := fset.Position(cg.Pos())
 		cep := fset.Position(cg.End())
 
-		if IsHeader(fset, cg, block) {
+		if IsHeader(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 			d := &proto.Comment{
-				Comment: strings.TrimLeft(cg.Text(), " "),
+				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
 					StartLine:   uint32(csp.Line),
 					StartColumn: uint32(csp.Column),
@@ -93,9 +92,9 @@ func ProcessPackageCoverage(file string, fset *token.FileSet, f *ast.File) *prot
 			hcs = append(hcs, d)
 		}
 
-		if IsInline(fset, cg, block) {
+		if IsInline(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 			d := &proto.Comment{
-				Comment: strings.TrimLeft(cg.Text(), " "),
+				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
 					StartLine:   uint32(csp.Line),
 					StartColumn: uint32(csp.Column),
@@ -143,9 +142,9 @@ func ProcessFunctionCoverage(file string, fset *token.FileSet, f *ast.File, fdec
 		csp := fset.Position(cg.Pos())
 		cep := fset.Position(cg.End())
 
-		if IsHeader(fset, cg, block) {
+		if IsHeader(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 			d := &proto.Comment{
-				Comment: strings.TrimLeft(cg.Text(), " "),
+				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
 					StartLine:   uint32(csp.Line),
 					StartColumn: uint32(csp.Column),
@@ -156,9 +155,9 @@ func ProcessFunctionCoverage(file string, fset *token.FileSet, f *ast.File, fdec
 			hcs = append(hcs, d)
 		}
 
-		if IsInline(fset, cg, block) {
+		if IsInline(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 			d := &proto.Comment{
-				Comment: strings.TrimLeft(cg.Text(), " "),
+				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
 					StartLine:   uint32(csp.Line),
 					StartColumn: uint32(csp.Column),
@@ -212,9 +211,9 @@ func ProcessVariableCoverage(file string, fset *token.FileSet, f *ast.File, gdec
 				csp := fset.Position(cg.Pos())
 				cep := fset.Position(cg.End())
 
-				if IsHeader(fset, cg, block) {
+				if IsHeader(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 					d := &proto.Comment{
-						Comment: strings.TrimLeft(cg.Text(), " "),
+						Comment: Normalize(cg.Text()),
 						Block: &proto.Block{
 							StartLine:   uint32(csp.Line),
 							StartColumn: uint32(csp.Column),
@@ -225,9 +224,9 @@ func ProcessVariableCoverage(file string, fset *token.FileSet, f *ast.File, gdec
 					hcs = append(hcs, d)
 				}
 
-				if IsInline(fset, cg, block) {
+				if IsInline(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 					d := &proto.Comment{
-						Comment: strings.TrimLeft(cg.Text(), " "),
+						Comment: Normalize(cg.Text()),
 						Block: &proto.Block{
 							StartLine:   uint32(csp.Line),
 							StartColumn: uint32(csp.Column),
@@ -293,9 +292,9 @@ func ProcessTypeCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *a
 			csp := fset.Position(cg.Pos())
 			cep := fset.Position(cg.End())
 
-			if IsHeader(fset, cg, block) {
+			if IsHeader(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 				d := &proto.Comment{
-					Comment: strings.TrimLeft(cg.Text(), " "),
+					Comment: Normalize(cg.Text()),
 					Block: &proto.Block{
 						StartLine:   uint32(csp.Line),
 						StartColumn: uint32(csp.Column),
@@ -306,9 +305,9 @@ func ProcessTypeCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *a
 				hcs = append(hcs, d)
 			}
 
-			if IsInline(fset, cg, block) {
+			if IsInline(fset, cg, block) && !IsOnlyNoLintAnnotation(cg.Text()) {
 				d := &proto.Comment{
-					Comment: strings.TrimLeft(cg.Text(), " "),
+					Comment: Normalize(cg.Text()),
 					Block: &proto.Block{
 						StartLine:   uint32(csp.Line),
 						StartColumn: uint32(csp.Column),
