@@ -1,7 +1,6 @@
 package ast_test
 
 import (
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -2114,6 +2113,32 @@ func MyFunc() bool {
 				InlineComments: []*proto.Comment{},
 			},
 		},
+
+		{
+			name:     "func with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:funlen
+func MyFunc() bool {
+    return true
+}
+`,
+			want: &proto.CoverageItem{
+				Scope: proto.CoverageItem_PUBLIC_FUNCTION,
+				TargetBlock: &proto.Block{
+					StartLine:   4,
+					StartColumn: 1,
+					EndLine:     6,
+					EndColumn:   2,
+				},
+				File:           "hoge.go",
+				Identifier:     "MyFunc",
+				Extension:      ".go",
+				HeaderComments: []*proto.Comment{},
+				InlineComments: []*proto.Comment{},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -2554,6 +2579,32 @@ var MyVar string = "string"
 		},
 
 		{
+			name:     "var with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:hoge
+var MyVar string = "string"
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   4,
+						StartColumn: 5,
+						EndLine:     4,
+						EndColumn:   10,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyVar",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
 			name:     "var () with comment",
 			filename: "hoge.go",
 			src: `package hoge
@@ -2918,6 +2969,34 @@ var (
 )
 
 // Out of MyVar
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 5,
+						EndLine:     5,
+						EndColumn:   10,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyVar",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
+			name:     "var () with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+var (
+    // nolint:xxx
+    MyVar string = "string"
+)
 `,
 			want: []*proto.CoverageItem{
 				{
@@ -3304,6 +3383,32 @@ const myConst string = "string" // myConst Inline
 const MyConst string = "string"
 
 // Out of MyConst
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   4,
+						StartColumn: 7,
+						EndLine:     4,
+						EndColumn:   14,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyConst",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
+			name:     "const with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:xxx
+const MyConst string = "string"
 `,
 			want: []*proto.CoverageItem{
 				{
@@ -3775,6 +3880,34 @@ const (
 				},
 			},
 		},
+
+		{
+			name:     "const () with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+const (
+    // nolint:xxx
+    MyConst string = "string"
+)
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_VARIABLE,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 5,
+						EndLine:     5,
+						EndColumn:   12,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyConst",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -3785,7 +3918,6 @@ const (
 		}
 
 		for _, decl := range f.Decls {
-			fmt.Printf("%v\n", decl)
 			if d := decl.(*ast.GenDecl); d.Tok == token.CONST {
 				t.Run(tt.name, func(t *testing.T) {
 					got := myAst.ProcessVariableCoverage(tt.filename, fset, f, d)
@@ -4362,6 +4494,35 @@ type MyStruct struct {
 		},
 
 		{
+			name:     "type struct with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:xxx
+type MyStruct struct {
+    a string
+    b string
+}
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_CLASS,
+					TargetBlock: &proto.Block{
+						StartLine:   4,
+						StartColumn: 6,
+						EndLine:     7,
+						EndColumn:   2,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyStruct",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
 			name:     "type () struct with comment",
 			filename: "hoge.go",
 			src: `package hoge
@@ -4838,6 +4999,37 @@ type (
 )
 
 // Out of MyStruct
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_CLASS,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 5,
+						EndLine:     8,
+						EndColumn:   6,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyStruct",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
+			name:     "type () struct with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:xxx
+type (
+    MyStruct struct {
+        a string
+        b string
+    }
+)
 `,
 			want: []*proto.CoverageItem{
 				{
@@ -5442,6 +5634,35 @@ type MyInterface interface {
 		},
 
 		{
+			name:     "type interface with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:xxx
+type MyInterface interface {
+    a() string
+    b() string
+}
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_CLASS,
+					TargetBlock: &proto.Block{
+						StartLine:   4,
+						StartColumn: 6,
+						EndLine:     7,
+						EndColumn:   2,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyInterface",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
 			name:     "type () interface with comment",
 			filename: "hoge.go",
 			src: `package hoge
@@ -5934,6 +6155,35 @@ type MyInterface interface {
 				},
 			},
 		},
+
+		{
+			name:     "type () interface with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:xxx
+type MyInterface interface {
+    a() string
+    b() string
+}
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_CLASS,
+					TargetBlock: &proto.Block{
+						StartLine:   4,
+						StartColumn: 6,
+						EndLine:     7,
+						EndColumn:   2,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyInterface",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -6322,6 +6572,34 @@ type MyType = map[string]int
 		},
 
 		{
+			name:     "type alias with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+// nolint:xxx
+type MyType = map[string]int
+
+// Out of MyType
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_TYPE,
+					TargetBlock: &proto.Block{
+						StartLine:   4,
+						StartColumn: 6,
+						EndLine:     4,
+						EndColumn:   29,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyType",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
 			name:     "type () alias with comment",
 			filename: "hoge.go",
 			src: `package hoge
@@ -6632,6 +6910,34 @@ type (
 )
 
 // Out of MyType
+`,
+			want: []*proto.CoverageItem{
+				{
+					Scope: proto.CoverageItem_PUBLIC_TYPE,
+					TargetBlock: &proto.Block{
+						StartLine:   5,
+						StartColumn: 5,
+						EndLine:     5,
+						EndColumn:   28,
+					},
+					File:           "hoge.go",
+					Identifier:     "MyType",
+					Extension:      ".go",
+					HeaderComments: []*proto.Comment{},
+					InlineComments: []*proto.Comment{},
+				},
+			},
+		},
+
+		{
+			name:     "type () alias with nolint annotation",
+			filename: "hoge.go",
+			src: `package hoge
+
+type (
+    // nolint:xxx
+    MyType = map[string]int
+)
 `,
 			want: []*proto.CoverageItem{
 				{
