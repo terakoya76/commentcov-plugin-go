@@ -4,5 +4,6 @@ plugins:
     execute_command: commentcov-plugin-go
 target_path: .
 exclude_paths:
+  - ./**/**_test.go
   - ./vendor/**/**
 mode: file_scope
