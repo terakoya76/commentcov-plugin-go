@@ -6,7 +6,7 @@ require (
 	github.com/commentcov/commentcov v0.0.9
 	github.com/google/go-cmp v0.5.9
 	github.com/hashicorp/go-hclog v1.3.1
-	github.com/hashicorp/go-plugin v1.4.6
+	github.com/hashicorp/go-plugin v1.4.8
 )
 
 require (
