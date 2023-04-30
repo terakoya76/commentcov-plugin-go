@@ -12,7 +12,7 @@ import (
 
 // FileToCoverageItems is the logic of the plugin.
 // it converts file to CoverageItems.
-func FileToCoverageItems(logger hclog.Logger, file string) ([]*proto.CoverageItem, error) {
+func FileToCoverageItems(_ hclog.Logger, file string) ([]*proto.CoverageItem, error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, file, nil, parser.ParseComments)
 	if err != nil {
