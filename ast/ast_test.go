@@ -45,8 +45,9 @@ var (
 	})
 )
 
-//nolint:funlen
 // TestProcessFileCoverage is the unittest for ProcessFileCoverage.
+//
+//nolint:funlen
 func TestProcessFileCoverage(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -1339,8 +1340,9 @@ func MyFunc() bool { // MyFunc Inline
 	}
 }
 
-//nolint:funlen
 // TestProcessPackageCoverage is the unittest for ProcessPackageCoverage.
+//
+//nolint:funlen
 func TestProcessPackageCoverage(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -1643,8 +1645,9 @@ package hoge
 	}
 }
 
-//nolint:funlen
 // TestProcessFunctionCoverage is the unittest for ProcessFunctionCoverage.
+//
+//nolint:funlen
 func TestProcessFunctionCoverage(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -2163,8 +2166,9 @@ func MyFunc() bool {
 	}
 }
 
-//nolint:funlen
 // TestProcessVariableCoverage_Var is the unittest for ProcessVariableCoverage: var.
+//
+//nolint:funlen
 func TestProcessVariableCoverage_Var(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -3039,8 +3043,9 @@ var (
 	}
 }
 
-//nolint:funlen
 // TestProcessVariableCoverage_Const is the unittest for ProcessVariableCoverage: const.
+//
+//nolint:funlen
 func TestProcessVariableCoverage_Const(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -3932,8 +3937,9 @@ const (
 	}
 }
 
-//nolint:funlen
 // TestProcessTypeCoverage_Struct is the unittest for ProcessTypeCoverage: Struct.
+//
+//nolint:funlen
 func TestProcessTypeCoverage_Struct(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -5072,8 +5078,9 @@ type (
 	}
 }
 
-//nolint:funlen
 // TestProcessTypeCoverage_Interface is the unittest for ProcessTypeCoverage: Interface.
+//
+//nolint:funlen
 func TestProcessTypeCoverage_Interface(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -6208,8 +6215,9 @@ type MyInterface interface {
 	}
 }
 
-//nolint:funlen
 // TestProcessTypeCoverage_TypeAlias is the unittest for ProcessTypeCoverage: Type Alias.
+//
+//nolint:funlen
 func TestProcessTypeCoverage_TypeAlias(t *testing.T) {
 	tests := []struct {
 		name     string
