@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/commentcov/commentcov v0.0.9
 	github.com/google/go-cmp v0.6.0
-	github.com/hashicorp/go-hclog v1.6.0
+	github.com/hashicorp/go-hclog v1.6.1
 	github.com/hashicorp/go-plugin v1.6.0
 )
 
