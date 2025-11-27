@@ -4,11 +4,26 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"math"
 	"path/filepath"
 
 	"github.com/commentcov/commentcov/proto"
 	"github.com/hashicorp/go-hclog"
 )
+
+// safeIntToUint32 converts an int to uint32 safely.
+// Returns 0 for negative values and math.MaxUint32 for values exceeding uint32 max.
+// This is safe for line/column numbers from token.Position which are always positive
+// and won't exceed uint32 max in practical source files.
+func safeIntToUint32(n int) uint32 {
+	if n < 0 {
+		return 0
+	}
+	if n > math.MaxUint32 {
+		return math.MaxUint32
+	}
+	return uint32(n)
+}
 
 // FileToCoverageItems is the logic of the plugin.
 // it converts file to CoverageItems.
@@ -66,10 +81,10 @@ func ProcessFileCoverage(file string, fset *token.FileSet, f *ast.File) []*proto
 func ProcessPackageCoverage(file string, fset *token.FileSet, f *ast.File) *proto.CoverageItem {
 	sp := fset.Position(f.Package)
 	block := &proto.Block{
-		StartLine:   uint32(sp.Line),
-		StartColumn: uint32(sp.Column),
-		EndLine:     uint32(sp.Line),
-		EndColumn:   uint32(sp.Column),
+		StartLine:   safeIntToUint32(sp.Line),
+		StartColumn: safeIntToUint32(sp.Column),
+		EndLine:     safeIntToUint32(sp.Line),
+		EndColumn:   safeIntToUint32(sp.Column),
 	}
 
 	hcs := []*proto.Comment{}
@@ -83,10 +98,10 @@ func ProcessPackageCoverage(file string, fset *token.FileSet, f *ast.File) *prot
 			d := &proto.Comment{
 				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
-					StartLine:   uint32(csp.Line),
-					StartColumn: uint32(csp.Column),
-					EndLine:     uint32(cep.Line),
-					EndColumn:   uint32(cep.Column),
+					StartLine:   safeIntToUint32(csp.Line),
+					StartColumn: safeIntToUint32(csp.Column),
+					EndLine:     safeIntToUint32(cep.Line),
+					EndColumn:   safeIntToUint32(cep.Column),
 				},
 			}
 			hcs = append(hcs, d)
@@ -96,10 +111,10 @@ func ProcessPackageCoverage(file string, fset *token.FileSet, f *ast.File) *prot
 			d := &proto.Comment{
 				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
-					StartLine:   uint32(csp.Line),
-					StartColumn: uint32(csp.Column),
-					EndLine:     uint32(cep.Line),
-					EndColumn:   uint32(cep.Column),
+					StartLine:   safeIntToUint32(csp.Line),
+					StartColumn: safeIntToUint32(csp.Column),
+					EndLine:     safeIntToUint32(cep.Line),
+					EndColumn:   safeIntToUint32(cep.Column),
 				},
 			}
 			ics = append(ics, d)
@@ -122,10 +137,10 @@ func ProcessFunctionCoverage(file string, fset *token.FileSet, f *ast.File, fdec
 	sp := fset.Position(fdecl.Pos())
 	ep := fset.Position(fdecl.End())
 	block := &proto.Block{
-		StartLine:   uint32(sp.Line),
-		StartColumn: uint32(sp.Column),
-		EndLine:     uint32(ep.Line),
-		EndColumn:   uint32(ep.Column),
+		StartLine:   safeIntToUint32(sp.Line),
+		StartColumn: safeIntToUint32(sp.Column),
+		EndLine:     safeIntToUint32(ep.Line),
+		EndColumn:   safeIntToUint32(ep.Column),
 	}
 	identifier := fdecl.Name.Name
 
@@ -146,10 +161,10 @@ func ProcessFunctionCoverage(file string, fset *token.FileSet, f *ast.File, fdec
 			d := &proto.Comment{
 				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
-					StartLine:   uint32(csp.Line),
-					StartColumn: uint32(csp.Column),
-					EndLine:     uint32(cep.Line),
-					EndColumn:   uint32(cep.Column),
+					StartLine:   safeIntToUint32(csp.Line),
+					StartColumn: safeIntToUint32(csp.Column),
+					EndLine:     safeIntToUint32(cep.Line),
+					EndColumn:   safeIntToUint32(cep.Column),
 				},
 			}
 			hcs = append(hcs, d)
@@ -159,10 +174,10 @@ func ProcessFunctionCoverage(file string, fset *token.FileSet, f *ast.File, fdec
 			d := &proto.Comment{
 				Comment: Normalize(cg.Text()),
 				Block: &proto.Block{
-					StartLine:   uint32(csp.Line),
-					StartColumn: uint32(csp.Column),
-					EndLine:     uint32(cep.Line),
-					EndColumn:   uint32(cep.Column),
+					StartLine:   safeIntToUint32(csp.Line),
+					StartColumn: safeIntToUint32(csp.Column),
+					EndLine:     safeIntToUint32(cep.Line),
+					EndColumn:   safeIntToUint32(cep.Column),
 				},
 			}
 			ics = append(ics, d)
@@ -192,10 +207,10 @@ func ProcessVariableCoverage(file string, fset *token.FileSet, f *ast.File, gdec
 			sp := fset.Position(name.Pos())
 			ep := fset.Position(name.End())
 			block := &proto.Block{
-				StartLine:   uint32(sp.Line),
-				StartColumn: uint32(sp.Column),
-				EndLine:     uint32(ep.Line),
-				EndColumn:   uint32(ep.Column),
+				StartLine:   safeIntToUint32(sp.Line),
+				StartColumn: safeIntToUint32(sp.Column),
+				EndLine:     safeIntToUint32(ep.Line),
+				EndColumn:   safeIntToUint32(ep.Column),
 			}
 
 			var scope proto.CoverageItem_Scope
@@ -215,10 +230,10 @@ func ProcessVariableCoverage(file string, fset *token.FileSet, f *ast.File, gdec
 					d := &proto.Comment{
 						Comment: Normalize(cg.Text()),
 						Block: &proto.Block{
-							StartLine:   uint32(csp.Line),
-							StartColumn: uint32(csp.Column),
-							EndLine:     uint32(cep.Line),
-							EndColumn:   uint32(cep.Column),
+							StartLine:   safeIntToUint32(csp.Line),
+							StartColumn: safeIntToUint32(csp.Column),
+							EndLine:     safeIntToUint32(cep.Line),
+							EndColumn:   safeIntToUint32(cep.Column),
 						},
 					}
 					hcs = append(hcs, d)
@@ -228,10 +243,10 @@ func ProcessVariableCoverage(file string, fset *token.FileSet, f *ast.File, gdec
 					d := &proto.Comment{
 						Comment: Normalize(cg.Text()),
 						Block: &proto.Block{
-							StartLine:   uint32(csp.Line),
-							StartColumn: uint32(csp.Column),
-							EndLine:     uint32(cep.Line),
-							EndColumn:   uint32(cep.Column),
+							StartLine:   safeIntToUint32(csp.Line),
+							StartColumn: safeIntToUint32(csp.Column),
+							EndLine:     safeIntToUint32(cep.Line),
+							EndColumn:   safeIntToUint32(cep.Column),
 						},
 					}
 					ics = append(ics, d)
@@ -262,10 +277,10 @@ func ProcessTypeCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *a
 		sp := fset.Position(ts.Pos())
 		ep := fset.Position(ts.End())
 		block := &proto.Block{
-			StartLine:   uint32(sp.Line),
-			StartColumn: uint32(sp.Column),
-			EndLine:     uint32(ep.Line),
-			EndColumn:   uint32(ep.Column),
+			StartLine:   safeIntToUint32(sp.Line),
+			StartColumn: safeIntToUint32(sp.Column),
+			EndLine:     safeIntToUint32(ep.Line),
+			EndColumn:   safeIntToUint32(ep.Column),
 		}
 		Identifier := ts.Name.Name
 
@@ -296,10 +311,10 @@ func ProcessTypeCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *a
 				d := &proto.Comment{
 					Comment: Normalize(cg.Text()),
 					Block: &proto.Block{
-						StartLine:   uint32(csp.Line),
-						StartColumn: uint32(csp.Column),
-						EndLine:     uint32(cep.Line),
-						EndColumn:   uint32(cep.Column),
+						StartLine:   safeIntToUint32(csp.Line),
+						StartColumn: safeIntToUint32(csp.Column),
+						EndLine:     safeIntToUint32(cep.Line),
+						EndColumn:   safeIntToUint32(cep.Column),
 					},
 				}
 				hcs = append(hcs, d)
@@ -309,10 +324,10 @@ func ProcessTypeCoverage(file string, fset *token.FileSet, f *ast.File, gdecl *a
 				d := &proto.Comment{
 					Comment: Normalize(cg.Text()),
 					Block: &proto.Block{
-						StartLine:   uint32(csp.Line),
-						StartColumn: uint32(csp.Column),
-						EndLine:     uint32(cep.Line),
-						EndColumn:   uint32(cep.Column),
+						StartLine:   safeIntToUint32(csp.Line),
+						StartColumn: safeIntToUint32(csp.Column),
+						EndLine:     safeIntToUint32(cep.Line),
+						EndColumn:   safeIntToUint32(cep.Column),
 					},
 				}
 				ics = append(ics, d)
